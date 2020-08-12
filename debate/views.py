@@ -71,3 +71,5 @@ def register(request):
     else:
         return render(request, "debate/register.html")
 
+def discussion(request):
+    return render(request, "debate/discussion.html")

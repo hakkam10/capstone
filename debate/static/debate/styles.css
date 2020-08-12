@@ -3,3 +3,34 @@
         display: block !important;
     }
   }
+.topic {
+    background-color: #dee2e6;
+    border:1px solid #dee2e6!important;
+    padding: 10px;
+}
+.box {
+    padding: 10px;
+    margin-top: 1.5rem;
+    border:1px solid gray!important;
+    border-radius:.25rem!important; 
+}
+
+.heading{
+    border-bottom:1px solid gray!important;
+}
+
+.neutral {
+   background-color: #fdffd4;
+   margin-right: auto!important;
+   margin-left: auto!important;
+}
+
+.for {
+    background-color: #ebffe8;
+    margin-right: auto!important;
+}
+
+.against {
+    background-color: #ffe8e8;
+    margin-left:auto!important;
+}

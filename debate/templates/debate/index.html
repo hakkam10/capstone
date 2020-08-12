@@ -3,8 +3,34 @@
 {% block title %}Debate{% endblock %}
 
 {% block body %}
+<div id="home">
+    <h1>Hello world!</h1>
+</div>
 
-<h1></h1>
-
+<div id="topics">
+    <div class="heading">
+        <h1>Topic</h1>
+    </div>
+    <a class="nav-link" href="{% url 'discussion' %}">
+        <div class="topic container">
+            <h4>Lorem Ipsum</h4>
+        </div>
+    </a>
+    <a class="nav-link" href="{% url 'discussion' %}">
+        <div class="topic container">
+            <h4>Lorem Ipsum</h4>
+        </div>
+    </a>
+    <a class="nav-link" href="{% url 'discussion' %}">
+        <div class="topic container">
+            <h4>Lorem Ipsum</h4>
+        </div>
+    </a>
+    <a class="nav-link" href="{% url 'discussion' %}">
+        <div class="topic container">
+            <h4>Lorem Ipsum</h4>
+        </div>
+    </a>
+</div>
 
 {% endblock %}
