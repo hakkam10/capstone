@@ -4,33 +4,63 @@
 
 {% block body %}
 <div id="home">
-    <h1>Hello world!</h1>
+    <div>
+        <h4>Discussions followed by you:</h4>
+        <div id="D-following">
+
+        </div>
+        <h4 class="border-top">Discussions participated by the ones you follow:</h4>
+        <div id="User-following">
+
+        </div>
+        <h4 class="border-top">New Discussions:</h4>
+        <div id="N-discussions">
+
+        </div>
+    </div>
 </div>
+
+{% if message %}
+<div>{{ message }}</div>
+{% endif %}
 
 <div id="topics">
     <div class="heading">
-        <h1>Topic</h1>
+        <h1></h1>
     </div>
-    <a class="nav-link" href="{% url 'discussion' %}">
-        <div class="topic container">
-            <h4>Lorem Ipsum</h4>
-        </div>
-    </a>
-    <a class="nav-link" href="{% url 'discussion' %}">
-        <div class="topic container">
-            <h4>Lorem Ipsum</h4>
-        </div>
-    </a>
-    <a class="nav-link" href="{% url 'discussion' %}">
-        <div class="topic container">
-            <h4>Lorem Ipsum</h4>
-        </div>
-    </a>
-    <a class="nav-link" href="{% url 'discussion' %}">
-        <div class="topic container">
-            <h4>Lorem Ipsum</h4>
-        </div>
-    </a>
+
+    <span class=""><button id="new-discussion-button" onclick="openNew()" class="btn my-3 btn-outline-primary">Create New discussion</button></span>
+    
+    <div id="new-discussion" class="mt-3">
+        <form id="new-discussion-form">
+            <input type="text" class="form-control" name="discussion" id="new-subtopic"  placeholder="Title">
+            <p id="name-error" class="text-danger"></p>
+            <textarea class="form-control" name="OA" placeholder="Opening Arguments" id="OA" rows="3"></textarea> 
+            <p id="argument-error" class="text-danger"></p>
+            <input type="submit" id="submit" value="Post" class="btn btn-primary my-2"/>
+        </form>
+    </div>
+    <h5 id="message"></h5>
+    <div id="sub-topics">
+    </div>
 </div>
+
+{% endblock %}
+{% block script %}
+<script>var a=true;</script>
+{% if user.is_authenticated %}
+<script>
+    var user_following = "{{user_following}}"
+</script>
+<script type="text/javascript">
+    var request_user = "{{ request.user.username }}";
+    var logged_in = true;
+</script>
+{% else %}
+<script type="text/javascript">
+    var request_user = undefined;
+    var logged_in = false;
+</script>
+{% endif %}
 
 {% endblock %}

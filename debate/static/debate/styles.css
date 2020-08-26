@@ -1,36 +1,129 @@
 @media (max-width: 767.98px) {
-    #toggle-navbar {
-        display: block !important;
+    #panel {
+        height: calc(100vh - 260px)!important;
     }
-  }
-.topic {
-    background-color: #dee2e6;
-    border:1px solid #dee2e6!important;
-    padding: 10px;
+    #argument {
+        height: 60px;
+    }
+    #button {
+        display: block!important;
+    }
+    #mySidebar {
+        display: none!important;
+    }
+    .openbtn {
+        display: block!important;
+    }
+    #mySidepanel {
+        position: fixed;
+        width: 0px;
+        padding-top: 45px!important;
+        max-width: 250px!important;
+    }
+    .sidepanel .sidebar-sticky {
+        margin-top: 50px!important;
+        padding-bottom: 10px!important;
+        top: 90px!important; /* Height of navbar */
+        height: calc(100vh - 90px)!important;      
+    }
+    
 }
-.box {
+
+.topic {
+    color: black;
+}
+
+.topic:hover {
+    color: #4d4a4a;
+}
+
+.timestamp {
+    color: black;
+}
+
+.F, .A, .N {
     padding: 10px;
-    margin-top: 1.5rem;
+    margin: 0.75rem;
     border:1px solid gray!important;
     border-radius:.25rem!important; 
+    height: fit-content;
+    width: 100%;
 }
 
 .heading{
     border-bottom:1px solid gray!important;
+    
 }
 
-.neutral {
+.N {
    background-color: #fdffd4;
    margin-right: auto!important;
    margin-left: auto!important;
 }
 
-.for {
+.F {
     background-color: #ebffe8;
     margin-right: auto!important;
 }
 
-.against {
+.A {
     background-color: #ffe8e8;
     margin-left:auto!important;
 }
+
+.form{
+    background-color: white;
+    position: sticky;
+    bottom: 0px;
+    z-index: 1;
+    width: 100%;
+}
+
+#panel {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 60px; /* Height of navbar */
+    height: calc(100vh - 290px);
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */    
+    z-index: 100;
+    border-top:1px solid gray!important;
+    border-bottom:1px solid gray!important;
+}
+
+#main {
+    position: sticky;
+  
+}
+
+#new-discussion{
+    display: none;
+}
+
+  #topic .btn {
+      float: right!important;
+  }
+
+  #sub-topics {
+      transition: 0.5s;
+  }
+
+.discussion-link{
+    background-color: rgb(250, 250, 250);
+    border:1px solid black!important;
+    padding: 10px;
+    border-radius: 0.25rem;
+}
+
+.fa {
+    font-size:20px;
+    color:red;
+    cursor: pointer
+}
+
+#opening_argument {
+    background-color: rgb(236, 242, 243);
+    padding: 0.4rem;
+    height: fit-content;
+}
+

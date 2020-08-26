@@ -1,0 +1,76 @@
+.sidepanel  {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100; /* Behind the navbar */
+  padding: 0;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+  transition: 0.5s;
+  }
+
+  .sidepanel .sidebar-sticky {
+    top: 45px; /* Height of navbar */
+    height: calc(100vh - 45px);
+  }
+  .sidepanel a {
+    text-decoration: none;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+  }
+  
+  .sidepanel a:hover {
+    color: #000000;
+  }
+  
+  .sidepanel .closebtn {
+    position: absolute;
+    top: 40px;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+    display: none;
+  }
+  
+  .openbtn {
+    font-size: 17px;
+    cursor: pointer;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    display: none;
+  }
+  
+  .openbtn:hover {
+    background-color:#444;
+  }
+  #main {
+    transition: margin-left .5s;
+    padding: 16px;
+  }
+
+  .sidepanel .nav-link {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .sidepanel .nav-link .feather {
+    margin-right: 4px;
+    color: #999;
+  }
+  
+  .sidepanel .nav-link.active {
+    color: #007bff;
+  }
+  
+  .sidepanel .nav-link:hover .feather,
+  .sidepanel .nav-link.active .feather {
+    color: inherit;
+  }
+  
+  .sidepanel-heading {
+    font-size: .75rem;
+    text-transform: uppercase;
+  }
+  

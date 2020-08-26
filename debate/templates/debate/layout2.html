@@ -45,6 +45,7 @@
             <div class="row row-cols-1">
 
                 <div id="mySidepanel" class="sidepanel bg-light col-2 p-0">
+                    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
                     <div class="sidebar-sticky mt-0">
                         <form class="d-inline-flex my-2">
                             <input class="form-control mx-2" type="search" placeholder="Search" aria-label="Search">
@@ -52,9 +53,9 @@
                         <ul class="nav flex-column">
                             {% for topic in topics %}
                             <li id="{{ topic.id }}" class="nav-item  links">
-                                <span class="nav-link">
+                                <a href="/?topic={{ topic.id }}" class="nav-link">
                                     {{ topic }}
-                                </span>
+                                </a>
                             </li>
                             {% endfor %}
                         </ul>    
@@ -99,18 +100,7 @@
             </div>
         </div>
         {% block script %}{% endblock %}
-        <script src="{% static 'debate\debate.js' %}"></script>
-        {% if topic_id != 0 %}
-        <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            var topic_id = "{{ topic_id }}"
-            topics(topic_id);
-            fetch_discussion(`/topic/${topic_id}`);
-            new_discussion(topic_id);
-            openNav();
-        });
-        </script>
-        {% endif %}
+        <script src="{% static 'debate\discussion.js' %}"></script>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
