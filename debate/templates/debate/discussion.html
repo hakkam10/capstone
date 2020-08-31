@@ -55,7 +55,7 @@ var a=true;
 const id = "{{ discussion.id }}";
 const topic = "{{ discussion.topic.id }}"
 </script>
-{% if user.is_authenticated %}
+{% if request.user.is_authenticated %}
 <script type="text/javascript">
     var request_user = "{{ request.user.username }}";
     var logged_in = true;

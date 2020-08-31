@@ -20,13 +20,13 @@
                 <span class="brand-title">D E B A T E</span>
             </a>
             <ul class="nav w-auto justify-content-end">
-                {% if user.is_authenticated %}
+                {% if request.user.is_authenticated %}
                     <li class="nav-item text-nowrap user">
                         <a class="nav-link text-white" href="{% url 'profile' request.user.username %}" id="profile"><strong>{{ request.user.username }}</strong></a>
                     </li>
                     <a href="{% url 'profile' request.user.username %}"><i class='fa my-1 mx-2 fa-user-circle'></i></a>
                 {% endif %}
-                {% if user.is_authenticated %}
+                {% if request.user.is_authenticated %}
                     <li class="nav-item text-nowrap logout">
                         <a class="nav-link text-white" href="{% url 'logout' %}">Log Out</a>
                     </li>

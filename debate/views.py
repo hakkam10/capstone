@@ -82,7 +82,6 @@ def discussion(request):
     return render(request, "debate/discussion.html", context)
 
 @csrf_exempt
-@login_required
 def topic(request, slug):
     try:
         topic = Topic.objects.get(slug=slug)

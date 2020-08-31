@@ -4,7 +4,7 @@
 
 {% block body %}
 <div id="home">
-    {% if user.is_authenticated %}
+    {% if request.user.is_authenticated %}
     <h2>Welcome {{ request.user.first_name }} {{ request.user.last_name }} </h2>
     
     <div>
@@ -41,7 +41,7 @@
     <div class="heading border-bottom mx-2">
         <h1></h1>
     </div>
-
+    {% if request.user.is_authenticated %}
     <span class=""><button id="new-discussion-button" onclick="openNew()" class="btn m-3 btn-outline-primary">Create New discussion</button></span>
     
     <div id="new-discussion" class="m-3">
@@ -53,6 +53,7 @@
             <input type="submit" id="submit" value="Post" class="btn btn-primary my-2"/>
         </form>
     </div>
+    {% endif %}
     <h5 id="message" class="text-danger"></h5>
     <div id="sub-topics">
     </div>
@@ -61,7 +62,7 @@
 {% endblock %}
 {% block script %}
 <script>var a=true;</script>
-{% if user.is_authenticated %}
+{% if request.user.is_authenticated %}
 <script>
     var user_following = "{{user_following}}"
 </script>
