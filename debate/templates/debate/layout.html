@@ -16,19 +16,21 @@
     <body>
         <nav class="navbar flex navbar-dark sticky-top bg-primary flex-nowrap p-0" id="navbar">
             <button class="openbtn bg-primary" onclick="openNav()">☰</button>  
-            <a class="brand navbar-brand-top nav-link text-white w-auto mr-auto"  href="{% url 'index' %}">
+            <a class="brand navbar-brand-top nav-link text-white col-md-2 mr-auto"  href="{% url 'index' %}">
                 <span class="brand-title">D E B A T E</span>
             </a>
             <ul class="nav w-auto justify-content-end">
                 {% if user.is_authenticated %}
-                    <li class="nav-item text-nowrap">
-                        <a class="nav-link text-white" href="#" id="profile"><strong>{{ request.user.username }}</strong></a>
+                    <li class="nav-item text-nowrap user">
+                        <a class="nav-link text-white" href="{% url 'profile' request.user.username %}" id="profile"><strong>{{ request.user.username }}</strong></a>
                     </li>
+                    <a href="{% url 'profile' request.user.username %}"><i aria-label="Account" class='fa my-1 mx-2 fa-user-circle'></i></a>
                 {% endif %}
                 {% if user.is_authenticated %}
-                    <li class="nav-item text-nowrap">
+                    <li class="nav-item text-nowrap logout">
                         <a class="nav-link text-white" href="{% url 'logout' %}">Log Out</a>
                     </li>
+                    <a href="{% url 'logout' %}"><i aria-label="Logout" class="fa my-1 mx-2 fa-sign-out"></i></a>
                 {% else %}
                     <li class="nav-item text-nowrap">
                         <a class="nav-link text-white" href="{% url 'login' %}">Log In</a>
@@ -46,12 +48,16 @@
 
                 <div id="mySidepanel" class="sidepanel bg-light col-2 p-0">
                     <div class="sidebar-sticky mt-0">
-                        <form class="d-inline-flex my-2">
-                            <input class="form-control mx-2" type="search" placeholder="Search" aria-label="Search">
+                    <div class="dropdown">
+                        <form class="d-inline-flex">
+                            <input class="form-control mx-2" type="search" placeholder="Search" onkeyup="search(this.value)" aria-label="Search">
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            </div>                        
                         </form>
+                    </div>
                         <ul class="nav flex-column">
                             {% for topic in topics %}
-                            <li id="{{ topic.id }}" class="nav-item  links">
+                            <li id="{{ topic.id }}" data-slug="{{ topic.slug }}" class="nav-item  links">
                                 <span class="nav-link">
                                     {{ topic }}
                                 </span>
@@ -62,55 +68,17 @@
                   </div>                  
                 
 
-                <main role="main" id="main" class="col-md-10 col-lg-8 col-sm-12 mx-auto pt-3 px-4">
+                <main role="main" id="main" class="col-md-9 col-lg-9 col-sm-12 ml-2 pt-3 px-3">
                         {% block body %}
                         {% endblock %}
                 </main>
 
-                <nav class="col-lg-2 d-none d-md-none d-lg-block bg-light sidebar-right">
-                    <div class="sidebar-sticky-right">
-                        <form class="form-inline my-2">
-                            <input class="form-control mx-2" type="search" placeholder="Search" aria-label="Search">
-                          </form>
-                        <ul class="nav flex-column">
-                            <li class="nav-item">
-                            <a class="nav-link active" href="#">
-                                <span data-feather="home"></span>
-                                Dash <span class="sr-only">(current)</span>
-                            </a>
-                            </li>
-                            <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="file"></span>
-                                Orders
-                            </a>
-                            </li>
-                            <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="shopping-cart"></span>
-                                Products
-                            </a>
-                            </li>
-                        </ul>    
-                    </div>
-                </nav>
 
             
             </div>
         </div>
         {% block script %}{% endblock %}
         <script src="{% static 'debate\debate.js' %}"></script>
-        {% if topic_id != 0 %}
-        <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            var topic_id = "{{ topic_id }}"
-            topics(topic_id);
-            fetch_discussion(`/topic/${topic_id}`);
-            new_discussion(topic_id);
-            openNav();
-        });
-        </script>
-        {% endif %}
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

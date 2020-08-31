@@ -1,3 +1,5 @@
+import datetime
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
@@ -6,8 +8,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
-import json
-import datetime
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.views.generic import ListView
@@ -21,14 +21,6 @@ context = {
 }
 
 def index(request):
-    user_discussions = Discussion.objects.filter(followers=request.user)
-    uf = [user_discussion.Serialize for user_discussion in user_discussions]
-    new_discussions = Discussion.objects.filter(timestamp__gte=datetime.date.today())[:3]
-    nd = [new_discussion.Serialize() for new_discussion in new_discussions]
-    id = int(request.GET.get("topic") or 0)
-    context["topic_id"] = id
-    context["user_following"] = uf
-    context["new_discussions"] = nd
     return render(request, "debate/index.html", context)
 
 def login_view(request):
@@ -48,12 +40,12 @@ def login_view(request):
                 "message": "Invalid username and/or password."
             })
     else:
-        return render(request, "debate/login.html")
+        return render(request, "debate/login.html", context)
 
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("login"))
 
 
 def register(request):
@@ -69,7 +61,7 @@ def register(request):
         if password != confirmation:
             return render(request, "debate/register.html", {
                 "message": "Passwords must match."
-            })
+            }, context)
 
         # Attempt to create new user
         try:
@@ -80,31 +72,31 @@ def register(request):
         except IntegrityError:
             return render(request, "debate/register.html", {
                 "message": "Username already taken."
-            })
+            }, context)
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "debate/register.html")
+        return render(request, "debate/register.html", context)
 
 def discussion(request):
     return render(request, "debate/discussion.html", context)
 
 @csrf_exempt
 @login_required
-def topic(request, topic):
+def topic(request, slug):
+    try:
+        topic = Topic.objects.get(slug=slug)
+    except Topic.DoesNotExist:
+        return JsonResponse({"message": "Topic does not exist, try again"})
+
     if request.method == "GET":
-        discussion = Topic.objects.get(pk=topic)
-        return JsonResponse(discussion.Serialize(), safe=False)
+        return JsonResponse(topic.Serialize(), safe=False)
 
     if request.method == "POST":
         data = json.loads(request.body)
         name = data.get("name")
         OA = data.get("argument")
         slug = slugify(name)
-        try:
-            topic = Topic.objects.get(pk=topic)
-        except Topic.DoesNotExist:
-            return JsonResponse({"does_not_exist": "topic does not exist"})
 
         discussion = Discussion(topic=topic, name=name, user=request.user)
         discussion.slug = slug
@@ -162,6 +154,8 @@ def discussion_view(request, slug):
     try:
         discussion = Discussion.objects.get(slug=slug)
         context["discussion"] = discussion
+        participants = list(dict.fromkeys(User.objects.filter(user_arguments__discussion=discussion)))
+        context["participants"] = participants
         context["found"] = True
         return render(request, "debate/discussion.html", context)
 
@@ -184,3 +178,73 @@ def like(request, argument):
             return JsonResponse({"message": "deleted"})
         else:
             return JsonResponse({"message": "created"})
+
+@csrf_exempt
+@login_required
+def homepage(request):
+    user_discussions = Discussion.objects.filter(followers=request.user)
+    uf = [user_discussion.Serialize() for user_discussion in user_discussions]
+
+    follower_participated = list(dict.fromkeys(Discussion.objects.filter(discussion_arguments__user__followers=request.user)))
+    f_p = [discussion.Serialize() for discussion in follower_participated]
+    
+    follower_started = Discussion.objects.filter(user__followers=request.user)
+    f_s = [discussion.Serialize() for discussion in follower_started]
+    
+
+    new_discussions = Discussion.objects.all().order_by("-timestamp")[:3]
+    nd = [new_discussion.Serialize() for new_discussion in new_discussions]
+
+    context = [uf] + [f_s] + [f_p] + [nd]
+    return JsonResponse(context, safe=False)
+
+
+
+@csrf_exempt
+@login_required
+def user(request, username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({"message": "User does not exist"})
+    if request.method == "PUT":
+        try:
+            if request.user in user.followers.all():
+                user.followers.remove(request.user)
+                return JsonResponse({"message": "deleted"})
+            else:
+                user.followers.add(request.user)
+                return JsonResponse({"message": "created"})
+        except:
+                return JsonResponse({"message": "failed"})
+
+    if request.method == "GET":
+        discussions = Discussion.objects.filter(user=user)
+        d = [discussion.Serialize() for discussion in discussions]
+        participated_discussions = list(dict.fromkeys(Discussion.objects.filter(discussion_arguments__user=user).exclude(user=user))) 
+        p_d = [discussion.Serialize() for discussion in participated_discussions]
+        context = [d] + [p_d]
+        return JsonResponse(context, safe=False)
+
+@csrf_exempt
+@login_required
+def profile(request, username):
+    try:
+        user = User.objects.get(username=username)
+        followers = User.objects.filter(followers__username=username)
+        context["found"] = True
+    except User.DoesNotExist:
+        context["found"] = False
+
+    context["user"] = user
+    context["followers"] = followers
+
+    return render(request, "debate/profile.html", context)
+
+@csrf_exempt
+@login_required
+def search(request):
+    query = str(request.GET.get("query"))
+    discussions = Discussion.objects.filter(name__icontains=query)[:5]
+    names = [discussion.SearchSerialize() for discussion in discussions]
+    return JsonResponse(names, safe=False)

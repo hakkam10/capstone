@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     openNav();
     argument();
     fetch_arguments();
-    button();
+    follow();
+    document.getElementById(`${topic}`).querySelector('a').classList.add("active");
 })
 
 function openNav() {
@@ -35,6 +36,7 @@ function argument() {
                 document.getElementById('post').querySelector('#argument').value = "";
                 document.getElementById('post').querySelector('#side').value = "";
                 fetch_arguments();
+                document.querySelector('#argument-count').innerHTML = parseInt(document.querySelector('#argument-count').innerHTML) + 1;
             } 
             if (message[0]) {
             if (message[0].argument) {
@@ -42,6 +44,7 @@ function argument() {
             if (message[0].side) {
                 document.querySelector('#argument_error').innerHTML = "Select a side";}
             }    
+            
         });
         return false;
     }
@@ -61,11 +64,11 @@ function fetch_arguments() {
                 var span = `<span class="heart"><i class="fa fa-heart-o"></i></span> <span class="like">${argument.likers.length}</span>`;
             }
             let element = document.createElement('div');
-            element.id = `id-${argument.id}`
+            element.id = `${argument.user}`
             element.setAttribute('data-id', `${argument.id}`)
             element.className = `col-9 ${argument.side} mt-1`
             element.innerHTML = `
-                <h5>${argument.user}</h5>
+                <h5><a style="text-decoration:none; color:black;" href="/profile/${argument.user}">${argument.user}</a></h5>
                 ${argument.argument}
                 <footer class="mt-2">
                 <p>${span}</p>
@@ -105,7 +108,7 @@ function like(element) {
 
 }
 
-function button() {
+function follow() {
     let follow = document.querySelector('#follow-input')
     follow.addEventListener('click', () => {
         if (follow.classList.contains('followed')) {
@@ -121,6 +124,37 @@ function button() {
         })
         .then(response => response.json())
         .then(result => {
+            if (result.message === "created") {
+                document.querySelector('#follower-count').innerHTML = parseInt(document.querySelector('#follower-count').innerHTML) + 1;
+            } else {
+                document.querySelector('#follower-count').innerHTML = parseInt(document.querySelector('#follower-count').innerHTML) - 1;
+            }
         });
     });
 }
+
+function search(query) {
+    console.log(query);
+    document.querySelector('.dropdown-menu').innerHTML = "";
+    if (query.length >= 1) {
+    fetch(`/search?query=${query}`)
+    .then(response => response.json())
+    .then(results => {
+            document.querySelector('.dropdown-menu').style.display = "block";
+            console.log(results);
+            results.forEach(result => {
+                var element = document.createElement('a');
+                element.className = "dropdown-item text-black p-1 border-bottom";
+                element.href = `/discussion/${result.slug}`;
+                element.innerHTML = result.name;
+                document.querySelector('.dropdown-menu').append(element);
+            })
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    } else {
+        document.querySelector('.dropdown-menu').style.display = "none";
+    }
+}
+

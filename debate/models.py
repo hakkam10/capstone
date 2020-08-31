@@ -3,7 +3,14 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class User(AbstractUser):
-    pass
+    followers = models.ManyToManyField("self", symmetrical=False)
+
+    def Serialize(self):
+        return {
+            "username": self.username,
+            "name": self.first_name + " " + self.last_name,
+            "followers": [follower.username for follower in self.followers.all()]
+        }
 
 class Topic(models.Model):
     topic = models.CharField(max_length=100, blank=False)
@@ -42,12 +49,20 @@ class Discussion(models.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "user": self.user.username,
             "topic": self.topic.topic,
             "timestamp": self.timestamp,
+            "slug": self.slug,
             "opening_argument": self.opening_argument, 
             "followers": [follower.username for follower in self.followers.all()],
             "arguments": [argument.argument for argument in self.discussion_arguments.all().order_by("timestamp")],
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
+        }
+
+    def SearchSerialize(self):
+        return {
+            "name": self.name,
+            "slug": self.slug
         }
 
 class Follower(models.Model):

@@ -1,0 +1,53 @@
+{% extends "debate/layout3.html" %}
+
+{% block title %}Debate{% endblock %}
+
+{% block body %}
+<div id="profile">
+    {% if found %}
+    <div style="float: right;" id="follow-div">
+        {% if request.user != user %}
+        {% if request.user in user.followers.all %}
+        <span id="follow-input" class="followed"><input type="button" value="&#10003; Following" class="btn btn-primary"/></span>
+        {% else %}
+        <span id="follow-input"><input type="button" value="Follow" class="btn btn-outline-primary"/></span>
+        {% endif %}
+        {% endif %}
+    </div>
+    <h3>{{ user.first_name }}  {{ user.last_name }}</h3>
+    <p class="text-secondary">Followers: <span id="follower-count" >{{ user.followers.all.count }}</span> | Following: {{ followers.count }}</p>
+    <div>
+    
+        <h4 class="border-bottom mt-3">Discussions started by {{ user.first_name }}  {{ user.last_name }}:</h4>
+        <div id="started-by">
+            <h6 id="empty-0" class="mb-4"></h6>
+        </div>
+        <h4 class="border-bottom mt-3">Discussions participated by {{ user.first_name }}  {{ user.last_name }}:</h4>
+        <div id="participated-in">
+            <h6 id="empty-1" class="mb-4"></h6>
+        </div>
+    </div>
+    {% else %}
+    <h3>Profile not found, try again</h3>
+    {% endif %}
+</div>
+
+
+
+{% endblock %}
+
+{% block script %}
+
+{% if user.is_authenticated %}
+<script type="text/javascript">
+    var request_user = "{{ request.user.username }}";
+    var logged_in = true;
+</script>
+{% else %}
+<script type="text/javascript">
+    var request_user = undefined;
+    var logged_in = false;
+</script>
+{% endif %}
+
+{% endblock %}

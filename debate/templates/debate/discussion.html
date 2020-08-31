@@ -16,7 +16,7 @@
             {% endif %}
         </div>
         <h3>{{ discussion.name }}</h3>
-        <p class="text-secondary">Started by: {{ discussion.user }} | Followers: {{ discussion.followers.count }} | Arguments: {{ discussion.discussion_arguments.count}}</p>
+        <p class="text-secondary">Started by: {{ discussion.user }} | Followers: <span id="follower-count" >{{ discussion.followers.count }}</span> | Arguments: <span id="argument-count"> {{ discussion.discussion_arguments.count }}</span></p>
         {% else %}
         <h3>Discussion does not exist</h3>
         {% endif %}
@@ -29,35 +29,19 @@
                 {{ discussion.opening_argument }}
             </div>
             <div id="fetch-arguments" class="col-12 p-0">
-            <div class="col-9 A">
-                <h5>Tony Stark</h5>
-                CSS on its own can be fun, but stylesheets are getting larger, more complex, and harder to maintain. This is where a preprocessor can help. Sass lets you use features that don't exist in CSS yet like variables, nesting, mixins, inheritance and other nifty goodies that make writing CSS fun again.
-                Once you start tinkering with Sass, it will take your preprocessed Sass file and save it as a normal CSS file that you can use in your website.The most direct way to make this happen is in your terminal. Once Sass is installed, you can compile your Sass to CSS using the sass command. You'll need to tell Sass which file to build from, and where to output CSS to. For example, running sass input.scss output.css from your terminal would take a single Sass file, input.scss, and compile that file to output.css.
-                You can also watch individual files or directories with the --watch flag. The watch flag tells Sass to watch your source files for changes, and re-compile CSS each time you save your Sass. If you wanted to watch (instead of manually build) your input.scss file, you'd just add the watch flag to your command, like so:
-            </div>
-            <div class="col-9 F">
-                <h5>Steve Rogers</h5>
-                CSS on its own can be fun, but stylesheets are getting larger, more complex, and harder to maintain. This is where a preprocessor can help. Sass lets you use features that don't exist in CSS yet like variables, nesting, mixins, inheritance and other nifty goodies that make writing CSS fun again.
-                Once you start tinkering with Sass, it will take your preprocessed Sass file and save it as a normal CSS file that you can use in your website.The most direct way to make this happen is in your terminal. Once Sass is installed, you can compile your Sass to CSS using the sass command. You'll need to tell Sass which file to build from, and where to output CSS to. For example, running sass input.scss output.css from your terminal would take a single Sass file, input.scss, and compile that file to output.css.
-            </div>
-            <div class="col-9 N">
-                <h5>Peter Parker</h5>
-                CSS on its own can be fun, but stylesheets are getting larger, more complex, and harder to maintain. This is where a preprocessor can help. Sass lets you use features that don't exist in CSS yet like variables, nesting, mixins, inheritance and other nifty goodies that make writing CSS fun again.
-                Once you start tinkering with Sass, it will take your preprocessed Sass file and save it as a normal CSS file that you can use in your website.The most direct way to make this happen is in your terminal. Once Sass is installed, you can compile your Sass to CSS using the sass command. You'll need to tell Sass which file to build from, and where to output CSS to. For example, running sass input.scss output.css from your terminal would take a single Sass file, input.scss, and compile that file to output.css.
-            </div>
             </div>
         </div>
         <div class="row">
         <div class="form">
             <form class="" id="post">
                 <textarea class="form-control my-2 mx-auto" name="newpost" id="argument" rows="3"  placeholder="Write your arguments"></textarea>
-                <select id="side">
+                <input type="submit" id="submit" value="Submit" class="btn btn-primary float-right"/>
+                <select id="side" class="form-control w-auto mt-2">
                     <option value="">Select a side</option>
                     <option value="N">Neutral</option>
                     <option value="F">For</option>
                     <option value="A">Against</option>
                 </select>
-                <input type="submit" id="submit" value="Submit" class="btn btn-primary my-2"/>
                 <p id="argument_error" class="text-danger"></p>
             </form>
         </div>
@@ -68,7 +52,8 @@
 {% block script %}
 <script>
 var a=true;
-const id = "{{ discussion.id }}"
+const id = "{{ discussion.id }}";
+const topic = "{{ discussion.topic.id }}"
 </script>
 {% if user.is_authenticated %}
 <script type="text/javascript">

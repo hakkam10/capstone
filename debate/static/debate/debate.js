@@ -1,30 +1,46 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#topics').style.display = 'none';
-    document.querySelector('#home').style.display = 'block';
-    openNav();
-    openNew();
-    console.log(user_following);
     document.querySelectorAll('.links').forEach(link => {
-        link.style.cursor = 'pointer';
-        link.addEventListener('click', () => {
-            const id = link.id;
-            topics(id);
-            fetch_discussion(`/topic/${id}`);
-            new_discussion(id);
-            openNav();
+            link.querySelector('span').addEventListener('click', () => {
+                const slug = link.dataset.slug;
+                topics();
+                document.getElementById("mySidepanel").style.width = "0";
+                fetch_discussion(`/topic/${slug}`);
+                new_discussion(slug);
+                history.pushState({slug: slug}, "", `#${slug}`);
         });
     });
+    openNav();
+    if (window.location.hash != "") {
+        let hash = window.location.hash;
+        const slug = hash.replace(hash.charAt(0), "");
+        topics();
+        fetch_discussion(`/topic/${slug}`);
+        new_discussion(slug);
+    } else {
+        document.querySelector('#topics').style.display = 'none';
+        document.querySelector('#home').style.display = 'block';
+        homepage();    
+    }
 });
 
-window.onpopstate = function(event){
-    fetch_discussion(`/topic/${event.state.id}`);
+window.onpopstate = function(event) {
+    console.log(event.state);
+    if (event.state != null) {
+        topics();
+        fetch_discussion(`/topic/${event.state.slug}`);
+        new_discussion(event.state.slug);
+    } else {
+        document.querySelector('#topics').style.display = 'none';
+        document.querySelector('#home').style.display = 'block'; 
+        homepage();   
+    }
 }
 
-function topics(id) {
+
+function topics() {
     document.querySelector('#topics').style.display = 'block';
     document.querySelector('#home').style.display = 'none';
     document.querySelectorAll('.links').forEach(link => {link.querySelector('span').classList.remove('active')});
-    document.getElementById(`${id}`).querySelector('span').classList.add('active');
     document.getElementById('sub-topics').innerHTML = "";
     document.querySelector('#message').innerHTML = "";
     let new_discussion = document.getElementById('new-discussion');
@@ -61,17 +77,16 @@ function string_to_slug (str) {
 }
 
 function openNew() {
-    let ND = document.getElementById('new-discussion');
-    if (ND.style.display === "none") {
-        document.querySelector("#new-discussion-button").classList.replace('btn-outline-primary', 'btn-primary');
-        ND.style.display = "block";
+    var content = document.getElementById('new-discussion');
+    document.querySelector("#new-discussion-button").classList.toggle('active');
+    if (content.style.maxHeight){
+      content.style.maxHeight = null;
     } else {
-        document.querySelector("#new-discussion-button").classList.replace('btn-primary', 'btn-outline-primary');
-        ND.style.display = "none";
+      content.style.maxHeight = content.scrollHeight + "px";
     }
 }
 
-function new_discussion(id) {
+function new_discussion(slug) {
     let new_discussion = document.getElementById('new-discussion');
     new_discussion.querySelector('#new-discussion-form').onsubmit = () => {
         document.querySelector('#message').innerHTML = "";
@@ -79,7 +94,7 @@ function new_discussion(id) {
         document.querySelector('#name-error').innerHTML = "";
         const name = new_discussion.querySelector('#new-subtopic').value;
         const argument = new_discussion.querySelector('#OA').value;
-        fetch(`/topic/${id}`, {
+        fetch(`/topic/${slug}`, {
             method: 'POST',
             body: JSON.stringify({
                 name: name,
@@ -90,8 +105,8 @@ function new_discussion(id) {
         .then(message => {
             console.log(message)
             if (message.message === "success") { 
-                topics(id);
-                fetch_discussion(`/topic/${id}`);
+                topics();
+                fetch_discussion(`/topic/${slug}`);
             }
             if (message.does_not_exist) {
                 document.querySelector('#message').innerHTML = `${message.does_not_exist}`;
@@ -99,10 +114,13 @@ function new_discussion(id) {
             if (message[0]) {
                 if (message[0].opening_argument) {
                 document.querySelector('#argument-error').innerHTML = `${message[0].opening_argument}`;
+                new_discussion.style.maxHeight = new_discussion.scrollHeight + "px";
                 } if (message[0].name) {
                 document.querySelector('#name-error').innerHTML = `${message[0].name}`;
+                new_discussion.style.maxHeight = new_discussion.scrollHeight + "px";
                 } if (message[0].slug) {
-                document.querySelector('#name-error').innerHTML = "Discussion already exists."
+                document.querySelector('#name-error').innerHTML = "Discussion already exists.";
+                new_discussion.style.maxHeight = new_discussion.scrollHeight + "px";
                 }
             } 
         });
@@ -111,7 +129,6 @@ function new_discussion(id) {
 }
 
 function follow(id) {
-    let d = document.getElementById(`discussion-${id}`);
     fetch(`/argument/${id}`, {
         method: 'PUT'
     })
@@ -119,19 +136,15 @@ function follow(id) {
     .then(result => {
         // Print result
         console.log(result.message);
-        if (d.querySelector('#follow_span').classList.contains('followed')) {
-            d.querySelector('#follow_span').innerHTML = `
-            <button data-id="${id}" class="btn btn-sm btn-outline-primary follow mb-2">Follow</button>
-            `;
-            d.querySelector('#follow_span').classList.remove('followed');
-            d.querySelector('.follow').addEventListener('click', () => {follow(id)});
-        } else {
-            d.querySelector('#follow_span').innerHTML = `
-            <button data-id="${id}" class="btn btn-sm btn-primary mb-2 follow followed">&#10003; Following</button>
-            `;
-            d.querySelector('#follow_span').classList.add('followed');
-            d.querySelector('.follow').addEventListener('click', () => {follow(id)});
-        }        
+        document.querySelectorAll(`.discussion-${id}`).forEach(d => {
+            d.querySelector('.btn').classList.toggle('active');
+            d.querySelector('#follow_span').classList.toggle('followed');
+            if (d.querySelector('#follow_span').classList.contains('followed')) {
+                d.querySelector('.btn').innerHTML = "&#10003; Following";
+            } else {
+                d.querySelector('.btn').innerHTML = "Follow";
+            }        
+        });
     });        
 }
 
@@ -139,26 +152,30 @@ function fetch_discussion(api) {
     fetch(api)
     .then(response => response.json())
     .then(topic => {
-        const slug = topic.slug;
-        history.pushState({slug: slug}, "", `#${slug}`);
-        document.getElementById('topics').querySelector('h1').innerHTML = `${topic.topic}`;        
-        if (topic.discussions.length === 0) {
-            document.getElementById('sub-topics').innerHTML = `
-            <h5>No topics yet</h5>`;
+        if (topic.message) {
+            document.getElementById('topics').style.display = 'none';
+            document.getElementById('not-found').innerHTML = `${topic.message}`;
+        } else {
+            const slug = topic.slug;
+            document.getElementById(`${topic.id}`).querySelector('span').classList.add('active');
+            document.getElementById('topics').querySelector('h1').innerHTML = `${topic.topic}`;        
+            if (topic.discussions.length === 0) {
+                document.getElementById('sub-topics').innerHTML = `
+                <h5 class="ml-4">No topics yet</h5>`;
+            }
+            topic.discussions.forEach(discussion => {
+                create(discussion, "sub-topics");
+            });
         }
-        topic.discussions.forEach(discussion => {
-            create(discussion);
-        });
     });
 }
 
-function create(discussion) {
-    const slug = string_to_slug(discussion.name);
+function create(discussion, div) {
     if (logged_in) {
         if (discussion.followers.includes(request_user)) {
             var follow_button = `
             <span id="follow_span" class="followed">
-            <button data-id="${discussion.id}" class="btn btn-sm btn-primary mb-2 follow followed">&#10003; Following</button>
+            <button data-id="${discussion.id}" class="btn btn-sm btn-outline-primary active mb-2 follow">&#10003; Following</button>
             </span>
         `;    
         } else {
@@ -171,23 +188,76 @@ function create(discussion) {
     }
 
     let element = document.createElement('div');
-    element.className = "discussion-link container my-1";
-    element.id = `discussion-${discussion.id}`;
+    element.className = `discussion-link container my-1 discussion-${discussion.id}`;
     element.setAttribute('data-id', `${discussion.id}`);
     element.innerHTML = `
-    <a href="/discussion/${discussion.slug}" class="nav-link topic"><h4>${discussion.name}</h4></a>
-    <p class="ml-3">Started by ${discussion.user}</p>
-    <footer class="text-secondary bottom row mt-3 mr-3 footer">
-    <span id="follow-button" class="col-sm-6">
+    <span id="follow-button" class="float-right mt-3">
     </span>
-    <div class="col-sm-6 timestamp text-right">${discussion.timestamp}</div>
+    <a href="/discussion/${discussion.slug}" class="nav-link topic"><h4>${discussion.name}</h4></a>
+    <p class="ml-3">Started by <a href="/profile/${discussion.user}" >${discussion.user}</a></p>
+    <footer class="text-secondary bottom mt-3 mr-3 footer">
+    <div class="timestamp text-right">${discussion.timestamp}</div>
     </footer>
     `;
     element.querySelector('#follow-button').innerHTML = follow_button;
-    append(element, "sub-topics")
+    append(element, div);
 }
 
 function append(element, div) {
     document.getElementById(`${div}`).append(element);
     element.querySelector('.follow').addEventListener('click', () => {follow(element.dataset.id)});
+}
+
+function homepage() {
+    document.querySelectorAll('.links').forEach(link => {
+        link.querySelector('span').classList.remove("active");
+    });
+    fetch(`homepage`)
+    .then(response => response.json())
+    .then(sections => {
+        console.log(sections)
+        var i;
+        for (i = 0; i <= 3; i++) {
+            if (sections[i].length === 0) {
+                document.getElementById(`empty-${i}`).innerHTML = "No discussions yet";
+            }
+        }
+        sections[0].forEach(discussion => {
+            create(discussion, "D-following");
+        });
+        sections[1].forEach(discussion => {
+            create(discussion, "User-started");
+        })
+        sections[2].forEach(discussion => {
+            create(discussion, "User-participated");
+        })
+        sections[3].forEach(discussion => {
+            create(discussion, "N-discussions");
+        });
+    })
+}
+
+function search(query) {
+    console.log(query);
+    document.querySelector('.dropdown-menu').innerHTML = "";
+    if (query.length >= 1) {
+    fetch(`/search?query=${query}`)
+    .then(response => response.json())
+    .then(results => {
+            document.querySelector('.dropdown-menu').style.display = "block";
+            console.log(results);
+            results.forEach(result => {
+                var element = document.createElement('a');
+                element.className = "dropdown-item text-black p-1 border-bottom";
+                element.href = `/discussion/${result.slug}`;
+                element.innerHTML = result.name;
+                document.querySelector('.dropdown-menu').append(element);
+            })
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    } else {
+        document.querySelector('.dropdown-menu').style.display = "none";
+    }
 }

@@ -20,13 +20,17 @@
         padding-top: 45px!important;
         max-width: 250px!important;
     }
-    .sidepanel .sidebar-sticky {
-        margin-top: 50px!important;
-        padding-bottom: 10px!important;
-        top: 90px!important; /* Height of navbar */
-        height: calc(100vh - 90px)!important;      
+
+    .navbar-brand-top {
+        width: auto!important;
     }
-    
+
+    .user {
+        display: none;
+    }
+    .logout {
+        display: none;
+    }
 }
 
 .topic {
@@ -44,7 +48,7 @@
 .F, .A, .N {
     padding: 10px;
     margin: 0.75rem;
-    border:1px solid gray!important;
+    border:1px solid;
     border-radius:.25rem!important; 
     height: fit-content;
     width: 100%;
@@ -56,18 +60,21 @@
 }
 
 .N {
-   background-color: #fdffd4;
-   margin-right: auto!important;
-   margin-left: auto!important;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+    margin-right: auto!important;
+    margin-left: auto!important;
 }
 
 .F {
-    background-color: #ebffe8;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
     margin-right: auto!important;
 }
 
 .A {
-    background-color: #ffe8e8;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
     margin-left:auto!important;
 }
 
@@ -97,7 +104,9 @@
 }
 
 #new-discussion{
-    display: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
 }
 
   #topic .btn {
@@ -109,10 +118,12 @@
   }
 
 .discussion-link{
-    background-color: rgb(250, 250, 250);
-    border:1px solid black!important;
     padding: 10px;
-    border-radius: 0.25rem;
+    background-color: rgb(245, 245, 245);
+    border-bottom: 2px solid rgb(194, 194, 194);
+    margin-top: 4px;
+    border-right: 2px solid rgb(194, 194, 194);
+
 }
 
 .fa {
@@ -125,5 +136,55 @@
     background-color: rgb(236, 242, 243);
     padding: 0.4rem;
     height: fit-content;
+    margin-bottom: 0.75rem;
 }
 
+.links {
+    cursor: pointer;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+  
+/* Track */
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+  
+  
+@media (min-width: 767.98px) {
+      .fa-sign-out {
+          font-size:30px !important;
+          color: white;
+          display: none !important;
+      }
+      
+      .fa-user-circle {
+          font-size:30px !important;
+          color: black;
+          display: none !important;
+      }
+
+}
+
+.fa-sign-out {
+    font-size:30px !important;
+    color: white;
+}
+
+.fa-user-circle {
+    font-size:30px !important;
+    color: white;
+}
